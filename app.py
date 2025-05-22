@@ -15,6 +15,9 @@ import logging  # Para adicionar logs detalhados
 from flask import jsonify
 
 
+        #################      OBSERVAÇÕES EU RETIREI A CONECÇÃO REAL POR MOTIVOS DE SEGRANÇA ####################
+
+
 
 # Configuração de logging para debug
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -26,9 +29,9 @@ app.secret_key = "supersecretkey123"
 # Função para conectar ao banco de dados SQL Server
 def get_db_connection():
     conn_str = (
-        "DRIVER={ODBC Driver 17 for SQL Server};"
-        "SERVER=localhost;"
-        "DATABASE=CaixaFFCC;"
+        "DADOSFICTICIOS;"    #NOME DO BANCO 
+        "SERVER=localhost;"   #CAMINHO DO SERVIDOR
+        "DATABASE=FICCAO;" #NOME DO BANCO
         "Trusted_Connection=yes;"
     )
     return pyodbc.connect(conn_str, autocommit=False)
