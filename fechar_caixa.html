@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Fechar Caixa - Caixa FFCC</title>
+    <style>
+        body {
+            background-color: #e1f0fa;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            max-width: 500px;
+            padding: 30px;
+            background: #e6f7fa;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            text-align: center;
+            border: 2px solid #4a90e2;
+        }
+        h2 {
+            color: #4a90e2;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 30px 0;
+        }
+        li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #a3d4f7;
+            font-size: 16px;
+        }
+        li span:first-child {
+            font-weight: bold;
+            color: #4a90e2;
+        }
+        li span:last-child {
+            color: #333;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        button {
+            background: linear-gradient(45deg, #4a90e2, #a3d4f7);
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+            font-weight: bold;
+        }
+        button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #7abff5, #a3d4f7);
+        }
+        .close-btn {
+            background: linear-gradient(45deg, #f44336, #ff6b6b);
+        }
+        .close-btn:hover {
+            background: linear-gradient(45deg, #d32f2f, #ff8787);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Este é o fechamento do caixa do dia {{ data }}</h2>
+        <ul>
+            <li><span>Data:</span> <span>{{ data }}</span></li>
+            <li><span>Dia da Semana:</span> <span>{{ dia_semana }}</span></li>
+            <li><span>Pix:</span> <span>R$ {{ "%.2f" % total_pix }}</span></li>
+            <li><span>Cartão:</span> <span>R$ {{ "%.2f" % total_cartao }}</span></li>
+            <li><span>Dinheiro:</span> <span>R$ {{ "%.2f" % total_cedula }}</span></li>
+            <li><span>Valor Inicial:</span> <span>R$ {{ "%.2f" % valor_inicial }}</span></li>
+            <li><span>Vendas Totais:</span> <span>R$ {{ "%.2f" % total_vendas }}</span></li>
+            <li><span>Despesa Total:</span> <span>R$ {{ "%.2f" % total_despesa }}</span></li>
+            <li><span>Saldo:</span> <span>R$ {{ "%.2f" % saldo }}</span></li>
+        </ul>
+        <div class="buttons">
+            <button class="close-btn" onclick="window.location.href='{{ url_for('entrada') }}'">Fechar |X|</button>
+            <button onclick="window.print()">Imprimir</button>
+        </div>
+    </div>
+</body>
+</html>

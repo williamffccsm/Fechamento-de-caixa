@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- Definindo metadados para melhor SEO e compatibilidade -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Uma homenagem especial para Jacira pelo Dia das Mães">
+  <title>Dia das Mães - Para Jacira</title>
+  <!-- Importando Tailwind CSS via CDN para estilização -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Definindo estilos personalizados -->
+  <style>
+    /* Fundo gradiente animado */
+    body {
+      background: linear-gradient(45deg, #f3e7e9, #e3eeff, #e3eeff, #f3e7e9);
+      background-size: 400%;
+      animation: gradient 15s ease infinite;
+    }
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    /* Animação de pulsar para o coração */
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    /* Efeito de fade-in para elementos */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1s ease-out, transform 1s ease-out;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body class="font-sans text-gray-800 overflow-x-hidden">
+  <!-- Cabeçalho com mensagem principal -->
+  <header class="min-h-screen flex items-center justify-center text-center bg-opacity-50">
+    <div class="px-4">
+      <!-- Título principal com animação -->
+      <h1 class="text-5xl md:text-7xl font-bold text-pink-600 mb-4 fade-in">
+        Feliz Dia das Mães, Jacira! 🌸
+      </h1>
+      <!-- Subtítulo com toque pessoal -->
+      <p class="text-xl md:text-2xl text-gray-600 mb-6 fade-in" style="animation-delay: 0.2s;">
+        Uma homenagem do seu amor, William, e das nossas princesas, Mikaele e Serenna
+      </p>
+      <!-- Botão decorativo (pode ser ajustado para ações futuras) -->
+      <button class="bg-pink-500 text-white px-8 py-3 rounded-full text-lg hover:bg-pink-600 transition duration-300 fade-in pulse" style="animation-delay: 0.4s;">
+        Você é Incrível! ❤️
+      </button>
+    </div>
+  </header>
+
+  <!-- Seção de mensagem pessoal -->
+  <section class="py-16 bg-white bg-opacity-80">
+    <div class="container mx-auto px-4 text-center">
+      <!-- Título da seção -->
+      <h2 class="text-3xl md:text-4xl font-semibold text-pink-600 mb-6 fade-in">
+        Para a Melhor Mãe do Mundo
+      </h2>
+      <!-- Mensagem personalizada -->
+      <p class="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto mb-8 fade-in" style="animation-delay: 0.2s;">
+        Jacira, há 9 anos você ilumina minha vida com seu amor e força. Como mãe de Mikaele e Serenna, 
+        você é o coração da nossa família, sempre cuidando, ensinando e amando com todo o seu ser. 
+        Este Dia das Mães é para celebrar você, a mulher mais especial que conhecemos!
+      </p>
+      <!-- Ícone de coração com animação -->
+      <div class="text-5xl text-pink-500 pulse fade-in" style="animation-delay: 0.4s;">
+        ❤️
+      </div>
+    </div>
+  </section>
+
+  <!-- Seção com galeria de sentimentos -->
+  <section class="py-16 bg-pink-50">
+    <div class="container mx-auto px-4">
+      <!-- Título da seção -->
+      <h2 class="text-3xl md:text-4xl font-semibold text-pink-600 text-center mb-12 fade-in">
+        Nosso Amor em Palavras
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Card 1 -->
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center transform hover:scale-105 transition duration-300 fade-in">
+          <h3 class="text-xl font-semibold text-pink-600 mb-2">Gratidão</h3>
+          <p class="text-gray-600">
+            Por cada momento que você dedica às nossas filhas, transformando cada dia em uma memória especial.
+          </p>
+        </div>
+        <!-- Card 2 -->
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center transform hover:scale-105 transition duration-300 fade-in" style="animation-delay: 0.2s;">
+          <h3 class="text-xl font-semibold text-pink-600 mb-2">Admiração</h3>
+          <p class="text-gray-600">
+            Sua força e carinho fazem de você um exemplo incrível para Mikaéle, Serenna e todos nós.
+          </p>
+        </div>
+        <!-- Card 3 -->
+        <div class="bg-white rounded-lg shadow-lg p-6 text-center transform hover:scale-105 transition duration-300 fade-in" style="animation-delay: 0.4s;">
+          <h3 class="text-xl font-semibold text-pink-600 mb-2">Amor Eterno</h3>
+          <p class="text-gray-600">
+            William, Mikaele e Serenna te amam hoje e sempre. Você é nosso tudo!
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seção final com mensagem de fechamento -->
+  <section class="py-16 bg-gradient-to-r from-pink-100 to-purple-100 text-center">
+    <div class="container mx-auto px-4">
+      <!-- Mensagem final -->
+      <h2 class="text-3xl md:text-4xl font-semibold text-pink-600 mb-6 fade-in">
+        Jacira, Você é Nosso Tesouro
+      </h2>
+      <p class="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto mb-8 fade-in" style="animation-delay: 0.2s;">
+        Neste Dia das Mães, queremos que você sinta todo o nosso amor e gratidão. 
+        Que seu dia seja tão especial quanto você é para nós. Te amamos muito!
+      </p>
+      <!-- Assinatura -->
+      <p class="text-xl font-semibold text-pink-600 fade-in" style="animation-delay: 0.4s;">
+        Com todo carinho, <br> William, Mikaele e Serenna
+      </p>
+    </div>
+  </section>
+
+  <!-- Rodapé -->
+  <footer class="py-8 bg-gray-800 text-white text-center">
+    <p class="text-sm">
+      Feito com ❤️ para Jacira | Dia das Mães 2025
+    </p>
+  </footer>
+
+  <!-- Script para ativar animações de fade-in ao rolar -->
+  <script>
+    // Seleciona todos os elementos com classe fade-in
+    const fadeElements = document.querySelectorAll('.fade-in');
+    
+    // Função para verificar se o elemento está visível na tela
+    const checkVisibility = () => {
+      fadeElements.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom >= 0) {
+          el.classList.add('visible');
+        }
+      });
+    };
+
+    // Adiciona listeners para rolagem e carregamento inicial
+    window.addEventListener('scroll', checkVisibility);
+    window.addEventListener('load', checkVisibility);
+  </script>
+</body>
+</html>

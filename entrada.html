@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Entradas - Caixa FFCC</title>
+    <style>
+        body { 
+            background-color: #e1f0fa;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-top: 60px;
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(45deg, #4a90e2, #7abff5);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 60px;
+            z-index: 1000;
+        }
+        .navbar a {
+            color: #fff;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 15px 25px;
+            transition: background 0.3s, transform 0.1s;
+            border-radius: 5px;
+            margin: 0 10px;
+        }
+        .navbar a[href*="entrada"] { background: #4caf50; }
+        .navbar a[href*="saida"] { background: #ff6b00; }
+        .navbar a[href*="analise"] { background: #ff9800; }
+        .navbar a[href*="dashboard"] { background: #2196f3; }
+        .navbar a[href*="logout"] { background: #f44336; }
+        /* Estilo para o botão Anotações */
+        .navbar a[href*="anotacoes"] { background: #9c27b0; }
+        /* Estilo para o botão Contas a Pagar */
+        .navbar a[href*="contas_a_pagar"] { background: #ffeb3b; color: #000; }
+        .navbar a:hover {
+            transform: scale(1.05);
+            background: #a3d4f7;
+        }
+        .container { 
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #e6f7fa;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+        }
+        h2 { color: #4a90e2; }
+        h3 { color: #4a90e2; margin-top: 20px; }
+        .input-row { 
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            justify-content: center;
+        }
+        input[type="number"], input[type="text"], select { 
+            padding: 10px;
+            border: 2px solid #a3d4f7;
+            border-radius: 5px;
+            width: 100px;
+        }
+        input[type="text"] { flex: 1; }
+        button { 
+            background: linear-gradient(45deg, #4a90e2, #a3d4f7);
+            color: #000000;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+            font-weight: bold; /* Adiciona negrito */
+        }
+        button:hover { 
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #7abff5, #a3d4f7);
+        }
+        .message { 
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { 
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error { 
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .nav { 
+            margin-top: 20px;
+        }
+        .nav a { 
+            color: #4a90e2;
+            margin: 0 10px;
+            text-decoration: none;
+        }
+        .nav a:hover { 
+            text-decoration: underline;
+        }
+        .total { 
+            font-weight: bold;
+            margin: 10px 0;
+            color: #4a90e2;
+        }
+        table { 
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td { 
+            padding: 10px;
+            border: 1px solid #a3d4f7;
+            text-align: center;
+        }
+        th { 
+            background-color: #7abff5;
+            color: #fff;
+        }
+        .table-section { 
+            display: none;
+        }
+        .datetime { 
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #4a90e2;
+            font-weight: bold;
+        }
+        .modo-cedula {
+            margin: 10px 0;
+            text-align: center;
+        }
+        .modo-cedula label {
+            margin: 0 10px;
+            color: #4a90e2;
+            font-weight: bold;
+        }
+        #umaVezSection, #separadoSection {
+            margin: 0 auto;
+            text-align: center;
+        }
+        #umaVezSection input[type="number"] {
+            width: 200px;
+        }
+        /* Estilo para o botão de exclusão (X) */
+        .delete-btn {
+            background: #f44336;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .delete-btn:hover {
+            background: #d32f2f;
+        }
+        /* Estilo para o pop-up de confirmação */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            width: 300px;
+        }
+        .modal-content p {
+            margin: 0 0 20px;
+            color: #4a90e2;
+            font-weight: bold;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .modal-buttons button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            color: #fff;
+        }
+        .modal-buttons .confirm-btn {
+            background: #f44336;
+        }
+        .modal-buttons .confirm-btn:hover {
+            background: #d32f2f;
+        }
+        .modal-buttons .cancel-btn {
+            background: #4a90e2;
+        }
+        .modal-buttons .cancel-btn:hover {
+            background: #7abff5;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('entrada') }}">Entradas</a>
+        <a href="{{ url_for('saida') }}">Saídas</a>
+        <a href="{{ url_for('analise') }}">Análise Financeira</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('anotacoes') }}">Anotações</a>
+        <a href="{{ url_for('contas_a_pagar') }}">Contas a Pagar</a>
+        <a href="{{ url_for('logout') }}">Sair</a>
+    </div>
+
+    <div class="container">
+        <div class="datetime">{{ current_datetime }}</div>
+        <h2>Registrar Entradas 🌟</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="input-row">
+                <input type="number" name="valor_inicial" step="0.01" placeholder="Valor Inicial da Caixa">
+                <button type="submit" name="valor_inicial">Informar Caixa Diário</button>
+                <button type="button" onclick="window.location.href='{{ url_for('fechar_caixa') }}'">Fechar Caixa</button>
+            </div>
+        </form>
+
+        <form method="POST" id="entradaForm" onsubmit="return validateForm()">
+            <div class="input-row">
+                <select name="tipo" id="tipoEntrada" onchange="toggleSections()" required>
+                    <option value="pix">Pix</option>
+                    <option value="cartao">Cartão</option>
+                    <option value="cedula">Dinheiro</option>
+                </select>
+                <input type="number" id="valorSimples" step="0.01" placeholder="Valor (ex.: 50.00)" style="display: none;">
+                <input type="hidden" name="valor" id="valorFinal" value="0.00">
+            </div>
+            <div class="input-row" id="bancoSection" style="display: none;">
+                <select name="banco_pagamento" required>
+                    <option value="Assas">Assas</option>
+                    <option value="C6 CNPJ">C6 CNPJ</option>
+                    <option value="C6 CPF">C6 CPF</option>
+                    <option value="Santander">Santander</option>
+                    <option value="Mercado Pago">Mercado Pago</option>
+                    <option value="Itaú">Itaú</option>
+                    <option value="Pag Bank">Pag Bank</option>
+                    <option value="Sofisa">Sofisa</option>
+                </select>
+                <select name="dono_transacao" required>
+                    <option value="William">William</option>
+                    <option value="Jacira">Jacira</option>
+                </select>
+            </div>
+            <div class="input-row" id="maquininhaSection" style="display: none;">
+                <select name="banco_pagamento" required>
+                    <option value="GetNet">GetNet</option>
+                    <option value="Mercado Pago">Mercado Pago</option>
+                    <option value="Pag Bank">Pag Bank</option>
+                </select>
+                <select name="dono_transacao" required>
+                    <option value="William">William</option>
+                    <option value="Jacira">Jacira</option>
+                </select>
+            </div>
+            <div class="input-row">
+                <input type="text" name="descricao" placeholder="Descrição (opcional)">
+            </div>
+
+            <div id="cedulasSection" style="display: none;">
+                <div class="modo-cedula">
+                    <label><input type="radio" name="modoCedula" value="umaVez" checked> Inserir de Uma Vez (padrão)</label>
+                    <label><input type="radio" name="modoCedula" value="separado"> Inserir Separado</label>
+                </div>
+
+                <div id="umaVezSection" style="display: block;">
+                    <input type="number" id="valorTotalCedulas" step="0.01" placeholder="Valor Total de Cédulas (ex.: 50.00)" oninput="atualizarValorFinal()">
+                    <p>Insira o valor total de cédulas de uma vez.</p>
+                </div>
+
+                <div id="separadoSection" style="display: none;">
+                    <h3>Moedas 💰</h3>
+                    <div class="input-row">
+                        <label>R$ 0.05 x</label>
+                        <input type="number" id="m0_05" min="0" value="0" oninput="calcularTotal()">
+                        <label>= R$</label>
+                        <input type="text" id="tm0_05" value="0.00" readonly>
+                    </div>
+                    <div class="input-row">
+                        <label>R$ 0.10 x</label>
+                        <input type="number" id="m0_10" min="0" value="0" oninput="calcularTotal()">
+                        <label>= R$</label>
+                        <input type="text" id="tm0_10" value="0.00" readonly>
+                    </div>
+                    <div class="input-row">
+                        <label>R$ 0.25 x</label>
+                        <input type="number" id="m0_25" min="0" value="0" oninput="calcularTotal()">
+                        <label>= R$</label>
+                        <input type="text" id="tm0_25" value="0.00" readonly>
+                    </div>
+                    <div class="input-row">
+                        <label>R$ 0.50 x</label>
+                        <input type="number" id="m0_50" min="0" value="0" oninput="calcularTotal()">
+                        <label>= R$</label>
+                        <input type="text" id="tm0_50" value="0.00" readonly>
+                    </div>
+                    <div class="input-row">
+                        <label>R$ 1.00 x</label>
+                        <input type="number" id="m1_00" min="0" value="0" oninput="calcularTotal()">
+                        <label>= R$</label>
+                        <input type="text" id="tm1_00" value="0.00" readonly>
+                    </div>
+
+                    <h3>Cédulas 💵</h3>
+                    <div class="input-row">
+                        <label>R$ 2.00 x</label>
+                        <input type="number" id="c2" min="0" value="0" oninput="calcularTotal()">
+                        <label>= R$</label>
+                        <input type="text" id="tc2" value="0.00" readonly>
+                    </div>
+                    <div class="input-row">
+                        <label>R$ 5.00 x</label>
+                        <input type="number" id="c5" min="0" value="0" oninput="calcularTotal()">
+                        <label>= R$</label>
+                        <input type="text" id="tc5" value="0.00" readonly>
+                    </div>
+                    <div class="input-row">
+                        <label>R$ 10.00 x</label>
+                        <input type="number" id="c10" min="0" value="0" oninput="calcularTotal()">
+                        <label>= R$</label>
+                        <input type="text" id="tc10" value="0.00" readonly>
+                    </div>
+                    <div class="input-row">
+                        <label>R$ 20.00 x</label>
+                        <input type="number" id="c20" min="0" value="0" oninput="calcularTotal()">
+                        <label>= R$</label>
+                        <input type="text" id="tc20" value="0.00" readonly>
+                    </div>
+                    <div class="input-row">
+                        <label>R$ 50.00 x</label>
+                        <input type="number" id="c50" min="0" value="0" oninput="calcularTotal()">
+                        <label>= R$</label>
+                        <input type="text" id="tc50" value="0.00" readonly>
+                    </div>
+                    <div class="input-row">
+                        <label>R$ 100.00 x</label>
+                        <input type="number" id="c100" min="0" value="0" oninput="calcularTotal()">
+                        <label>= R$</label>
+                        <input type="text" id="tc100" value="0.00" readonly>
+                    </div>
+                    <div class="total">
+                        Total: R$ <span id="totalCedulas">0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit">Adicionar Entrada</button>
+        </form>
+
+        <div class="input-row">
+            <button onclick="toggleTable('pixTable')">Mostrar Entrada Pix</button>
+            <button onclick="toggleTable('cartaoTable')">Mostrar Entrada Cartão</button>
+            <button onclick="toggleTable('dinheiroTable')">Mostrar Entrada Dinheiro</button>
+            <button onclick="toggleTable('geralTable')">Mostrar Entradas Gerais</button>
+        </div>
+
+        <div id="pixTable" class="table-section">
+            <h3>Entradas Pix</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Dia da Semana</th>
+                        <th>Pix</th>
+                        <th>Banco</th>
+                        <th>Dono</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in pix %}
+                        <tr>
+                            <td>{{ t[2].strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>{{ dias_semana[t[2].weekday()] }}</td>
+                            <td>R$ {{ "%.2f" % t[1] }}</td>
+                            <td>{{ t[3] or '-' }}</td>
+                            <td>{{ t[4] or '-' }}</td>
+                            <td>
+                                <button class="delete-btn" onclick="showDeleteModal({{ t[5] }}, '{{ t[1] }}', 'Entradas Pix')">X</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="cartaoTable" class="table-section">
+            <h3>Entradas Cartão</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Dia da Semana</th>
+                        <th>Cartão</th>
+                        <th>Maquininha</th>
+                        <th>Dono</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in cartao %}
+                        <tr>
+                            <td>{{ t[2].strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>{{ dias_semana[t[2].weekday()] }}</td>
+                            <td>R$ {{ "%.2f" % t[1] }}</td>
+                            <td>{{ t[3] or '-' }}</td>
+                            <td>{{ t[4] or '-' }}</td>
+                            <td>
+                                <button class="delete-btn" onclick="showDeleteModal({{ t[5] }}, '{{ t[1] }}', 'Entradas Cartão')">X</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="dinheiroTable" class="table-section">
+            <h3>Entradas Dinheiro</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Dia da Semana</th>
+                        <th>Dinheiro</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in cedula %}
+                        <tr>
+                            <td>{{ t[2].strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>{{ dias_semana[t[2].weekday()] }}</td>
+                            <td>R$ {{ "%.2f" % t[1] }}</td>
+                            <td>
+                                <button class="delete-btn" onclick="showDeleteModal({{ t[5] }}, '{{ t[1] }}', 'Entradas Dinheiro')">X</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="geralTable" class="table-section">
+            <h3>Entradas Gerais</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Dia da Semana</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in geral %}
+                        <tr>
+                            <td>{{ t[2].strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>{{ dias_semana[t[2].weekday()] }}</td>
+                            <td>R$ {{ "%.2f" % t[1] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pop-up de confirmação para exclusão -->
+        <div id="deleteModal" class="modal">
+            <div class="modal-content">
+                <p id="deleteMessage"></p>
+                <div class="modal-buttons">
+                    <button class="confirm-btn" id="confirmDelete">Apagar</button>
+                    <button class="cancel-btn" onclick="closeDeleteModal()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav">
+            <a href="{{ url_for('saida') }}">Saídas</a> |
+            <a href="{{ url_for('analise') }}">Análise</a> |
+            <a href="{{ url_for('dashboard') }}">Painel</a> |
+            <a href="{{ url_for('anotacoes') }}">Anotações</a> |
+            <a href="{{ url_for('contas_a_pagar') }}">Contas a Pagar</a> |
+            <a href="{{ url_for('logout') }}">Sair</a>
+        </div>
+    </div>
+
+    <script>
+        function toggleSections() {
+            const tipo = document.getElementById('tipoEntrada').value;
+            const bancoSection = document.getElementById('bancoSection');
+            const maquininhaSection = document.getElementById('maquininhaSection');
+            const cedulasSection = document.getElementById('cedulasSection');
+            const valorSimples = document.getElementById('valorSimples');
+
+            bancoSection.style.display = tipo === 'pix' ? 'flex' : 'none';
+            maquininhaSection.style.display = tipo === 'cartao' ? 'flex' : 'none';
+            cedulasSection.style.display = tipo === 'cedula' ? 'block' : 'none';
+            valorSimples.style.display = ['pix', 'cartao'].includes(tipo) ? 'block' : 'none';
+            valorSimples.required = ['pix', 'cartao'].includes(tipo);
+
+            document.getElementById('valorFinal').value = "0.00";
+            if (tipo === 'cedula') {
+                toggleCedulaMode();
+            }
+        }
+
+        function calcularTotal() {
+            const valores = {
+                'm0_05': 0.05, 'm0_10': 0.10, 'm0_25': 0.25, 'm0_50': 0.50, 'm1_00': 1.00,
+                'c2': 2.00, 'c5': 5.00, 'c10': 10.00, 'c20': 20.00, 'c50': 50.00, 'c100': 100.00
+            };
+
+            let total = 0;
+            for (const [id, valor] of Object.entries(valores)) {
+                const quantidade = parseInt(document.getElementById(id).value) || 0;
+                const subtotal = quantidade * valor;
+                document.getElementById('t' + id).value = subtotal.toFixed(2);
+                total += subtotal;
+            }
+
+            total = Math.max(0, total);
+            document.getElementById('totalCedulas').textContent = total.toFixed(2);
+            document.getElementById('valorFinal').value = total.toFixed(2);
+        }
+
+        function atualizarValorFinal() {
+            const valorTotalCedulas = parseFloat(document.getElementById('valorTotalCedulas').value) || 0;
+            document.getElementById('valorFinal').value = valorTotalCedulas.toFixed(2);
+        }
+
+        function toggleCedulaMode() {
+            const modo = document.querySelector('input[name="modoCedula"]:checked').value;
+            const umaVezSection = document.getElementById('umaVezSection');
+            const separadoSection = document.getElementById('separadoSection');
+
+            if (modo === 'umaVez') {
+                umaVezSection.style.display = 'block';
+                separadoSection.style.display = 'none';
+                atualizarValorFinal();
+            } else {
+                umaVezSection.style.display = 'none';
+                separadoSection.style.display = 'block';
+                calcularTotal();
+            }
+        }
+
+        function validateForm() {
+            const tipo = document.getElementById('tipoEntrada').value;
+            let valor;
+            if (tipo === 'cedula') {
+                const modo = document.querySelector('input[name="modoCedula"]:checked').value;
+                if (modo === 'umaVez') {
+                    atualizarValorFinal();
+                } else {
+                    calcularTotal();
+                }
+                valor = parseFloat(document.getElementById('valorFinal').value);
+            } else {
+                valor = parseFloat(document.getElementById('valorSimples').value) || 0;
+                document.getElementById('valorFinal').value = valor.toFixed(2);
+            }
+
+            if (isNaN(valor) || valor <= 0) {
+                alert('O valor da entrada deve ser maior que zero.');
+                return false;
+            }
+            return true;
+        }
+
+        function toggleTable(tableId) {
+            const table = document.getElementById(tableId);
+            const isVisible = table.style.display === 'none' || table.style.display === '';
+            table.style.display = isVisible ? 'block' : 'none';
+        }
+
+        function showDeleteModal(transacaoId, valor, tabela) {
+            const modal = document.getElementById('deleteModal');
+            const message = document.getElementById('deleteMessage');
+            const confirmBtn = document.getElementById('confirmDelete');
+
+            message.textContent = `Tem certeza que deseja apagar R$ ${parseFloat(valor).toFixed(2)} da tabela ${tabela}?`;
+            modal.style.display = 'flex';
+
+            confirmBtn.onclick = function() {
+                fetch('/deletar_transacao', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `transacao_id=${transacaoId}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const button = document.querySelector(`button[onclick="showDeleteModal(${transacaoId}, '${valor}', '${tabela}')"]`);
+                        if (button) {
+                            const row = button.closest('tr');
+                            if (row) {
+                                row.remove();
+                            }
+                        }
+                        const tableId = tabela === 'Entradas Pix' ? 'pixTable' :
+                                       tabela === 'Entradas Cartão' ? 'cartaoTable' :
+                                       tabela === 'Entradas Dinheiro' ? 'dinheiroTable' : null;
+                        if (tableId) {
+                            const tableBody = document.querySelector(`#${tableId} tbody`);
+                            if (tableBody && tableBody.children.length === 0) {
+                                document.getElementById(tableId).style.display = 'none';
+                            }
+                        }
+                        closeDeleteModal();
+                    } else {
+                        alert('Erro ao deletar a transação: ' + data.message);
+                        closeDeleteModal();
+                    }
+                })
+                .catch(error => {
+                    alert('Erro ao deletar a transação: ' + error);
+                    closeDeleteModal();
+                });
+            };
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        toggleSections();
+        document.querySelectorAll('input[name="modoCedula"]').forEach(radio => {
+            radio.addEventListener('change', toggleCedulaMode);
+        });
+        toggleCedulaMode();
+    </script>
+</body>
+</html>

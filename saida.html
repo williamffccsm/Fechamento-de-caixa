@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8"> <!-- Define a codificação de caracteres como UTF-8 para suportar acentos -->
+    <title>Saídas - Caixa FFCC</title> <!-- Título da página exibido na aba do navegador -->
+    <style>
+        body { 
+            background-color: #fff1e6; /* Define a cor de fundo do corpo da página */
+            font-family: Arial, sans-serif; /* Define a fonte padrão */
+            margin: 0; /* Remove margens padrão */
+            padding-top: 60px; /* Espaço para o menu fixo no topo */
+        }
+        /* Estilo do menu de navegação */
+        .navbar {
+            position: fixed; /* Fixa o menu no topo da página */
+            top: 0; /* Posiciona no topo */
+            left: 0; /* Alinha à esquerda */
+            width: 100%; /* Ocupa toda a largura */
+            background: linear-gradient(45deg, #ff9f43, #ffbc77); /* Gradiente de fundo */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra para efeito 3D */
+            display: flex; /* Usa flexbox para alinhamento */
+            justify-content: center; /* Centraliza os itens horizontalmente */
+            align-items: center; /* Centraliza os itens verticalmente */
+            height: 60px; /* Altura do menu */
+            z-index: 1000; /* Garante que o menu fique acima de outros elementos */
+        }
+        .navbar a {
+            color: #fff; /* Cor do texto dos links */
+            font-weight: bold; /* Texto em negrito */
+            text-decoration: none; /* Remove sublinhado padrão */
+            padding: 15px 25px; /* Espaçamento interno */
+            transition: background 0.3s, transform 0.1s; /* Animação de transição */
+            border-radius: 5px; /* Bordas arredondadas */
+            margin: 0 10px; /* Margem entre os links */
+        }
+        /* Cores específicas para cada página */
+        .navbar a[href*="entrada"] {
+            background: #4caf50; /* Verde para a página de Entradas */
+        }
+        .navbar a[href*="saida"] {
+            background: #ff6b00; /* Vermelho para a página de Saídas */
+        }
+        .navbar a[href*="analise"] {
+            background: #ff9800; /* Laranja para a página de Análise Financeira */
+        }
+        .navbar a[href*="dashboard"] {
+            background: #2196f3; /* Azul para a página de Dashboard */
+        }
+        .navbar a[href*="logout"] {
+            background: #f44336; /* Cinza escuro para o botão de Sair */
+        }
+        /* Estilo para o botão Anotações */
+        .navbar a[href*="anotacoes"] {
+            background: #9c27b0; /* Roxo para a página de Anotações */
+        }
+        /* Estilo para o botão Contas a Pagar */
+        .navbar a[href*="contas_a_pagar"] {
+            background: #ffeb3b; /* Amarelo para a página de Contas a Pagar */
+            color: #000; /* Texto preto para melhor contraste */
+        }
+        .navbar a:hover {
+            transform: scale(1.05); /* Aumenta o tamanho ao passar o mouse */
+            background: #ffd6a5; /* Cor de fundo ao passar o mouse */
+        }
+        .container { 
+            max-width: 800px; /* Largura máxima do container */
+            margin: 50px auto; /* Centraliza o container com margens */
+            padding: 20px; /* Espaçamento interno */
+            background: #fff5eb; /* Cor de fundo do container */
+            border-radius: 10px; /* Bordas arredondadas */
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Sombra leve */
+            text-align: center; /* Alinha o texto ao centro */
+            position: relative; /* Posicionamento relativo para o datetime */
+        }
+        h2 { color: #ff9f43; } /* Cor do título principal */
+        .input-row { 
+            display: flex; /* Usa flexbox para alinhamento */
+            align-items: center; /* Alinha itens verticalmente */
+            gap: 10px; /* Espaçamento entre elementos */
+            margin: 10px 0; /* Margem externa */
+        }
+        input[type="number"], input[type="text"], select { 
+            padding: 10px; /* Espaçamento interno */
+            border: 2px solid #ffd6a5; /* Borda */
+            border-radius: 5px; /* Bordas arredondadas */
+            flex: 1; /* Campo se expande para preencher espaço */
+        }
+        button { 
+            background: linear-gradient(45deg, #ff9f43, #ffd6a5); /* Gradiente de fundo */
+            color: #000000; /* Cor do texto */
+            padding: 10px 20px; /* Espaçamento interno */
+            border: none; /* Remove borda */
+            border-radius: 5px; /* Bordas arredondadas */
+            cursor: pointer; /* Cursor de mão */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra */
+            transition: transform 0.1s; /* Animação de transição */
+            font-weight: bold; /* Adiciona negrito */
+        }
+        button:hover { 
+            transform: scale(1.05); /* Aumenta ao passar o mouse */
+            background: linear-gradient(45deg, #ffbc77, #ffd6a5); /* Novo gradiente */
+        }
+        .message { 
+            padding: 10px; /* Espaçamento interno */
+            margin: 10px 0; /* Margem externa */
+            border-radius: 5px; /* Bordas arredondadas */
+        }
+        .success { 
+            background-color: #d4edda; /* Cor de fundo para mensagens de sucesso */
+            color: #155724; /* Cor do texto */
+        }
+        .error { 
+            background-color: #f8d7da; /* Cor de fundo para mensagens de erro */
+            color: #721c24; /* Cor do texto */
+        }
+        .nav { 
+            margin-top: 20px; /* Margem superior */
+        }
+        .nav a { 
+            color: #ff9f43; /* Cor dos links */
+            margin: 0 10px; /* Margem entre links */
+            text-decoration: none; /* Remove sublinhado */
+        }
+        .nav a:hover { 
+            text-decoration: underline; /* Sublinha ao passar o mouse */
+        }
+        table { 
+            width: 100%; /* Largura total */
+            border-collapse: collapse; /* Remove espaçamento entre bordas */
+            margin-top: 20px; /* Margem superior */
+        }
+        th, td { 
+            padding: 10px; /* Espaçamento interno */
+            border: 1px solid #ffd6a5; /* Borda */
+            text-align: center; /* Alinha texto ao centro */
+        }
+        th { 
+            background-color: #ffbc77; /* Cor de fundo do cabeçalho */
+            color: #fff; /* Cor do texto */
+        }
+        .datetime { 
+            position: absolute; /* Posicionamento absoluto */
+            top: 20px; /* Distância do topo */
+            right: 20px; /* Distância da direita */
+            color: #ff9f43; /* Cor do texto */
+            font-weight: bold; /* Texto em negrito */
+        }
+        /* Estilo para o botão de exclusão */
+        .delete-btn {
+            background: #f44336; /* Cor vermelha para o botão de exclusão */
+            color: #fff; /* Texto branco */
+            border: none; /* Sem borda */
+            border-radius: 3px; /* Bordas arredondadas */
+            padding: 5px 10px; /* Espaçamento interno */
+            cursor: pointer; /* Cursor de mão */
+            transition: background 0.3s; /* Animação de transição */
+        }
+        .delete-btn:hover {
+            background: #d32f2f; /* Cor mais escura ao passar o mouse */
+        }
+        /* Estilo para o pop-up de confirmação */
+        .modal {
+            display: none; /* Oculto por padrão */
+            position: fixed; /* Fixo na tela */
+            z-index: 1001; /* Acima de outros elementos */
+            left: 0; /* Alinha à esquerda */
+            top: 0; /* Alinha ao topo */
+            width: 100%; /* Ocupa toda a largura */
+            height: 100%; /* Ocupa toda a altura */
+            background-color: rgba(0,0,0,0.5); /* Fundo semi-transparente */
+            justify-content: center; /* Centraliza horizontalmente */
+            align-items: center; /* Centraliza verticalmente */
+        }
+        .modal-content {
+            background-color: #fff; /* Fundo branco */
+            padding: 20px; /* Espaçamento interno */
+            border-radius: 5px; /* Bordas arredondadas */
+            text-align: center; /* Alinha texto ao centro */
+            box-shadow: 0 0 10px rgba(0,0,0,0.3); /* Sombra */
+            width: 300px; /* Largura fixa */
+        }
+        .modal-content p {
+            margin: 0 0 20px; /* Margem inferior para o texto */
+            color: #ff9f43; /* Cor do texto */
+            font-weight: bold; /* Texto em negrito */
+        }
+        .modal-buttons {
+            display: flex; /* Usa flexbox */
+            justify-content: center; /* Centraliza os botões */
+            gap: 20px; /* Espaçamento entre botões */
+        }
+        .modal-buttons button {
+            padding: 10px 20px; /* Espaçamento interno */
+            border-radius: 5px; /* Bordas arredondadas */
+            cursor: pointer; /* Cursor de mão */
+            border: none; /* Sem borda */
+            color: #ffffff; /* Texto branco */
+        }
+        .modal-buttons .confirm-btn {
+            background: #f44336; /* Cor vermelha para "Apagar" */
+        }
+        .modal-buttons .confirm-btn:hover {
+            background: #d32f2f; /* Cor mais escura ao passar o mouse */
+        }
+        .modal-buttons .cancel-btn {
+            background: #ff9f43; /* Cor laranja para "Cancelar" */
+        }
+        .modal-buttons .cancel-btn:hover {
+            background: #ffbc77; /* Cor mais clara ao passar o mouse */
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu de Navegação fixo no topo -->
+    <div class="navbar">
+        <a href="{{ url_for('entrada') }}">Entradas</a> <!-- Link para a página de Entradas -->
+        <a href="{{ url_for('saida') }}">Saídas</a> <!-- Link para a página de Saídas -->
+        <a href="{{ url_for('analise') }}">Análise Financeira</a> <!-- Link para a página de Análise Financeira -->
+        <a href="{{ url_for('dashboard') }}">Dashboard</a> <!-- Link para a página de Dashboard -->
+        <a href="{{ url_for('anotacoes') }}">Anotações</a> <!-- Link para a página de Anotações -->
+        <a href="{{ url_for('contas_a_pagar') }}">Contas a Pagar</a> <!-- Link para a página de Contas a Pagar -->
+        <a href="{{ url_for('logout') }}">Sair</a> <!-- Link para a página de Logout -->
+    </div>
+
+    <div class="container">
+        <div class="datetime">{{ current_datetime }}</div> <!-- Exibe a data e hora atual -->
+        <h2>Registrar Saídas 🌼</h2> <!-- Título principal da página -->
+        {% with messages = get_flashed_messages(with_categories=true) %} <!-- Captura mensagens flash -->
+            {% if messages %} <!-- Verifica se há mensagens -->
+                {% for category, message in messages %} <!-- Loop pelas mensagens -->
+                    <div class="message {{ category }}">{{ message }}</div> <!-- Exibe cada mensagem com sua categoria -->
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="POST"> <!-- Formulário para registrar saídas -->
+            <div class="input-row">
+                <input type="number" name="valor" step="0.01" placeholder="Valor (ex.: 30.00)" required> <!-- Campo para valor -->
+            </div>
+            <div class="input-row">
+                <input type="text" name="descricao" placeholder="Descrição (opcional)"> <!-- Campo para descrição -->
+            </div>
+            <div class="input-row">
+                <select name="banco_pagamento" required> <!-- Seletor de banco -->
+                    <option value="Mercado Pago">Mercado Pago</option>
+                    <option value="C6 Bank CPF">C6 Bank CPF</option>
+                    <option value="C6 Bank CNPJ">C6 Bank CNPJ</option>
+                    <option value="Santander">Santander</option>
+                    <option value="Itaú">Itaú</option>
+                    <option value="Pag Pago">Pag Pago</option>
+                    <option value="Sofisa">Sofisa</option>
+                    <option value="XP">XP</option>
+                </select>
+                <select name="forma_pagamento" required> <!-- Seletor de forma de pagamento -->
+                    <option value="dinheiro">Dinheiro</option>
+                    <option value="cartao">Cartão</option>
+                </select>
+                <select name="dono_banco" required> <!-- Seletor de dono -->
+                    <option value="William">William</option>
+                    <option value="Jacira">Jacira</option>
+                </select>
+            </div>
+            <button type="submit">Salvar Saída</button> <!-- Botão para submeter o formulário -->
+        </form>
+
+        <!-- Tabela de Controle -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Saída</th>
+                    <th>Valor</th>
+                    <th>Descrição</th>
+                    <th>Qual Banco</th>
+                    <th>Dinheiro/Cartão</th>
+                    <th>Dono do Banco</th>
+                    <th>Ação</th> <!-- Nova coluna para o botão de exclusão -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for saida in saidas %}
+                    <tr>
+                        <td>{{ saida[0].strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>R$ {{ "%.2f" % saida[1]|abs }}</td>
+                        <td>{{ saida[2] or '-' }}</td>
+                        <td>{{ saida[3] }}</td>
+                        <td>{{ saida[4] }}</td>
+                        <td>{{ saida[5] }}</td>
+                        <td>
+                            <!-- Botão de exclusão que ativa o pop-up -->
+                            <button class="delete-btn" onclick="showDeleteModal('{{ saida[6] }}', '{{ saida[1]|abs }}', '{{ saida[0].strftime('%d/%m/%Y') }}')">X</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="nav">
+            <a href="{{ url_for('entrada') }}">Entradas</a> | <!-- Link para Entradas -->
+            <a href="{{ url_for('analise') }}">Análise</a> | <!-- Link para Análise -->
+            <a href="{{ url_for('dashboard') }}">Painel</a> | <!-- Link para Dashboard -->
+            <a href="{{ url_for('anotacoes') }}">Anotações</a> | <!-- Link para Anotações -->
+            <a href="{{ url_for('contas_a_pagar') }}">Contas a Pagar</a> | <!-- Link para Contas a Pagar -->
+            <a href="{{ url_for('logout') }}">Sair</a> <!-- Link para Logout -->
+        </div>
+
+        <!-- Pop-up de confirmação para exclusão -->
+        <div id="deleteModal" class="modal">
+            <div class="modal-content">
+                <p id="deleteMessage"></p>
+                <div class="modal-buttons">
+                    <button class="confirm-btn" id="confirmDelete">Apagar</button>
+                    <button class="cancel-btn" onclick="closeDeleteModal()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script para gerenciar o pop-up e a exclusão -->
+    <script>
+        // Função para exibir o pop-up de confirmação
+        function showDeleteModal(transacaoId, valor, data) {
+            const modal = document.getElementById('deleteModal');
+            const message = document.getElementById('deleteMessage');
+            const confirmBtn = document.getElementById('confirmDelete');
+
+            // Define a mensagem do pop-up com o valor e a data
+            message.textContent = `Tem certeza que deseja apagar R$ ${parseFloat(valor).toFixed(2)} da tabela saídas na data ${data}?`;
+
+            // Exibe o pop-up
+            modal.style.display = 'flex';
+
+            // Configura o botão "Apagar" para enviar a requisição de exclusão
+            confirmBtn.onclick = function() {
+                // Envia a requisição POST para deletar a transação
+                fetch('/deletar_transacao_saida', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `transacao_id=${transacaoId}&redirect_to=saida`
+                })
+                .then(response => response.json()) // Espera que a rota retorne JSON
+                .then(data => {
+                    if (data.success) {
+                        // Remove a linha da tabela dinamicamente
+                        const button = document.querySelector(`button[onclick="showDeleteModal('${transacaoId}', '${valor}', '${data}')"]`);
+                        if (button) {
+                            const row = button.closest('tr');
+                            if (row) {
+                                row.remove();
+                            }
+                        }
+                        // Exibe mensagem de sucesso
+                        const successMsg = document.createElement('div');
+                        successMsg.className = 'message success';
+                        successMsg.textContent = 'Transação deletada com sucesso!';
+                        document.querySelector('.container').insertBefore(successMsg, document.querySelector('table'));
+                        setTimeout(() => successMsg.remove(), 3000); // Remove a mensagem após 3 segundos
+                        closeDeleteModal();
+                    } else {
+                        alert('Erro ao deletar a transação: ' + data.message);
+                        closeDeleteModal();
+                    }
+                })
+                .catch(error => {
+                    alert('Erro ao deletar a transação: ' + error);
+                    closeDeleteModal();
+                });
+            };
+        }
+
+        // Função para fechar o pop-up
+        function closeDeleteModal() {
+            const modal = document.getElementById('deleteModal');
+            modal.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

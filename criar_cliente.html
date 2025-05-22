@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Criar Cliente - Caixa FFCC</title>
+    <style>
+        body {
+            background-color: #e1f0fa;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-top: 60px;
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(45deg, #4a90e2, #7abff5);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 60px;
+            z-index: 1000;
+        }
+        .navbar a {
+            color: #fff;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 15px 25px;
+            transition: background 0.3s, transform 0.1s;
+            border-radius: 5px;
+            margin: 0 10px;
+        }
+        .navbar a:hover {
+            transform: scale(1.05);
+            background: #a3d4f7;
+        }
+        .container {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #e6f7fa;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h2 { color: #4a90e2; }
+        .input-row {
+            margin: 10px 0;
+        }
+        input[type="text"], input[type="password"] {
+            padding: 10px;
+            border: 2px solid #a3d4f7;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            background: linear-gradient(45deg, #4a90e2, #a3d4f7);
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .address-section {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #a3d4f7;
+            border-radius: 5px;
+        }
+        .address-section h3 {
+            color: #4a90e2;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('entrada') }}">Entradas</a>
+        <a href="{{ url_for('saida') }}">Saídas</a>
+        <a href="{{ url_for('analise') }}">Análise Financeira</a>
+        <a href="{{ url_for('dashboard') }}">Painel</a>
+        <a href="{{ url_for('logout') }}">Sair</a>
+    </div>
+
+    <div class="container">
+        <h2>Criar Novo Cliente 🌟</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="input-row">
+                <input type="text" name="nome" placeholder="Nome" required>
+            </div>
+            <div class="input-row">
+                <input type="text" name="email" placeholder="Email" required>
+            </div>
+            <div class="input-row">
+                <input type="text" name="cpf" placeholder="CPF" required>
+            </div>
+            <div class="input-row">
+                <input type="text" name="telefone" placeholder="Telefone (ex.: (11) 91234-5678)" required>
+            </div>
+            <div class="input-row">
+                <input type="password" name="senha" placeholder="Senha Inicial" required>
+            </div>
+
+            <div class="address-section">
+                <h3>Endereço (Opcional)</h3>
+                <div class="input-row">
+                    <input type="text" name="rua" placeholder="Rua">
+                </div>
+                <div class="input-row">
+                    <input type="text" name="numero" placeholder="Número">
+                </div>
+                <div class="input-row">
+                    <input type="text" name="bairro" placeholder="Bairro">
+                </div>
+                <div class="input-row">
+                    <input type="text" name="cidade" placeholder="Cidade">
+                </div>
+                <div class="input-row">
+                    <input type="text" name="estado" placeholder="Estado (ex.: SP)">
+                </div>
+                <div class="input-row">
+                    <input type="text" name="cep" placeholder="CEP (ex.: 12345-678)">
+                </div>
+            </div>
+
+            <button type="submit">Criar Cliente</button>
+        </form>
+    </div>
+</body>
+</html>

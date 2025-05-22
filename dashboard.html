@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8"> <!-- Define a codificação de caracteres como UTF-8 para suportar acentos -->
+    <title>Dashboard - Caixa FFCC</title> <!-- Título da página exibido na aba do navegador -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script> <!-- Inclui a biblioteca Chart.js para gráficos -->
+    <style>
+        body { 
+            background-color: #e0f7fa; /* Define a cor de fundo do corpo da página */
+            font-family: Arial, sans-serif; /* Define a fonte padrão */
+            margin: 0; /* Remove margens padrão */
+            overflow-x: hidden; /* Evita rolagem horizontal */
+            padding-top: 60px; /* Espaço para o menu fixo no topo */
+        }
+        /* Estilo do menu de navegação */
+        .navbar {
+            position: fixed; /* Fixa o menu no topo da página */
+            top: 0; /* Posiciona no topo */
+            left: 0; /* Alinha à esquerda */
+            width: 100%; /* Ocupa toda a largura */
+            background: linear-gradient(45deg, #0288d1, #81d4fa); /* Gradiente de fundo */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra para efeito 3D */
+            display: flex; /* Usa flexbox para alinhamento */
+            justify-content: center; /* Centraliza os itens horizontalmente */
+            align-items: center; /* Centraliza os itens verticalmente */
+            height: 60px; /* Altura do menu */
+            z-index: 1000; /* Garante que o menu fique acima de outros elementos */
+        }
+        .navbar a {
+            color: #fff; /* Cor do texto dos links */
+            font-weight: bold; /* Texto em negrito */
+            text-decoration: none; /* Remove sublinhado padrão */
+            padding: 15px 25px; /* Espaçamento interno */
+            transition: background 0.3s, transform 0.1s; /* Animação de transição */
+            border-radius: 5px; /* Bordas arredondadas */
+            margin: 0 10px; /* Margem entre os links */
+        }
+        /* Cores específicas para cada página */
+        .navbar a[href*="entrada"] { background: #4caf50; /* Verde para a página de Entradas */ }
+        .navbar a[href*="saida"] { background: #ff6b00; /* Vermelho para a página de Saídas */ }
+        .navbar a[href*="analise"] { background: #ff9800; /* Laranja para a página de Análise Financeira */ }
+        .navbar a[href*="dashboard"] { background: #2196f3; /* Azul para a página de Dashboard */ }
+        .navbar a[href*="logout"] { background: #f44336; /* Cinza escuro para o botão de Sair */ }
+        .navbar a[href*="anotacoes"] { background: #9c27b0; /* Roxo para a página de Anotações */ }
+        .navbar a[href*="contas_a_pagar"] { background: #ffeb3b; color: #000; /* Amarelo para a página de Contas a Pagar com texto preto */ }
+        .navbar a:hover {
+            transform: scale(1.05); /* Aumenta o tamanho ao passar o mouse */
+            background: #81d4fa; /* Cor de fundo ao passar o mouse */
+        }
+        .container { 
+            max-width: 900px; /* Largura máxima do container */
+            margin: 20px auto; /* Centraliza o container com margens */
+            padding: 20px; /* Espaçamento interno */
+            background: #e6f7fa; /* Cor de fundo do container */
+            border-radius: 10px; /* Bordas arredondadas */
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Sombra leve */
+            text-align: center; /* Alinha o texto ao centro */
+        }
+        h2 { 
+            color: #0288d1; /* Cor do título principal */
+            margin-bottom: 20px; /* Margem inferior */
+        }
+        .input-row { 
+            display: flex; /* Usa flexbox para alinhamento */
+            align-items: center; /* Alinha itens verticalmente */
+            justify-content: center; /* Centraliza horizontalmente */
+            gap: 10px; /* Espaçamento entre elementos */
+            margin-bottom: 20px; /* Margem inferior */
+            flex-wrap: wrap; /* Permite quebra de linha */
+        }
+        input, select { 
+            padding: 10px; /* Espaçamento interno */
+            border: 2px solid #81d4fa; /* Borda */
+            border-radius: 5px; /* Bordas arredondadas */
+        }
+        button { 
+            background: #0288d1; /* Cor de fundo */
+            color: #ffffff; /* Cor do texto */
+            padding: 10px 20px; /* Espaçamento interno */
+            border: none; /* Remove borda */
+            border-radius: 5px; /* Bordas arredondadas */
+            cursor: pointer; /* Cursor de mão */
+            transition: background 0.3s; /* Animação de transição */
+            font-weight: bold; /* Adiciona negrito */
+        }
+        button:hover { 
+            background: #01579b; /* Cor de fundo ao passar o mouse */
+        }
+        .summary { 
+            margin: 20px 0; /* Margem externa */
+            padding: 15px; /* Espaçamento interno */
+            background: #fff; /* Cor de fundo */
+            border-radius: 5px; /* Bordas arredondadas */
+        }
+        .summary p { 
+            margin: 5px 0; /* Margem para parágrafos */
+            color: #0288d1; /* Cor do texto */
+        }
+        canvas { 
+            max-width: 100%; /* Largura máxima */
+            margin: 20px auto; /* Centraliza com margens */
+            display: block; /* Exibe como bloco */
+            height: 300px !important; /* Altura fixa */
+        }
+        .nav { 
+            margin-top: 20px; /* Margem superior */
+        }
+        .nav a { 
+            color: #0288d1; /* Cor dos links */
+            margin: 0 10px; /* Margem entre links */
+            text-decoration: none; /* Remove sublinhado */
+        }
+        .nav a:hover { 
+            text-decoration: underline; /* Sublinha ao passar o mouse */
+        }
+        .datetime { 
+            color: #0288d1; /* Cor do texto */
+            font-weight: bold; /* Texto em negrito */
+            margin-bottom: 20px; /* Margem inferior */
+        }
+        .debug-message { 
+            color: red; /* Cor do texto */
+            font-weight: bold; /* Texto em negrito */
+            margin: 10px 0; /* Margem externa */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px; /* Limita a largura do gráfico para dar espaço à legenda */
+            margin: 0 auto; /* Centraliza o container */
+        }
+        .data-table {
+            width: 100%;
+            max-width: 700px;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        .data-table th, .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            color: #0288d1;
+        }
+        .data-table th {
+            background-color: #81d4fa;
+            font-weight: bold;
+        }
+        .data-table tr:hover {
+            background-color: #e0f7fa;
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu de Navegação fixo no topo -->
+    <div class="navbar">
+        <a href="{{ url_for('entrada') }}">Entradas</a> <!-- Link para a página de Entradas -->
+        <a href="{{ url_for('saida') }}">Saídas</a> <!-- Link para a página de Saídas -->
+        <a href="{{ url_for('analise') }}">Análise Financeira</a> <!-- Link para a página de Análise Financeira -->
+        <a href="{{ url_for('dashboard') }}">Dashboard</a> <!-- Link para a página de Dashboard -->
+        <a href="{{ url_for('anotacoes') }}">Anotações</a> <!-- Link para a página de Anotações -->
+        <a href="{{ url_for('contas_a_pagar') }}">Contas a Pagar</a> <!-- Link para a página de Contas a Pagar -->
+        <a href="{{ url_for('logout') }}">Sair</a> <!-- Link para a página de Logout -->
+    </div>
+
+    <div class="container">
+        <div class="datetime">{{ current_datetime | default('Não disponível') }}</div> <!-- Exibe a data e hora atual com valor padrão -->
+        <h2>Dashboard 📊</h2> <!-- Título principal da página -->
+
+        <form method="POST"> <!-- Formulário para selecionar filtro de análise -->
+            <div class="input-row">
+                <input type="date" name="data_inicio" required> <!-- Campo para data inicial -->
+                <input type="date" name="data_fim" required> <!-- Campo para data final -->
+                <button type="submit">Analisar</button> <!-- Botão para submeter o formulário -->
+            </div>
+        </form>
+
+        <div id="summarySection"> <!-- Seção para exibir resumo -->
+            {% if total_entradas is not none and total_saidas is not none %} <!-- Verifica se há dados -->
+                <div class="summary">
+                    <p><strong>Período:</strong> {{ periodo_label | default('Selecione um período') }}</p> <!-- Exibe o período -->
+                    <p><strong>Total Entradas:</strong> R$ {{ "%.2f" | format(total_entradas) }}</p> <!-- Exibe total de entradas -->
+                    <p><strong>Total Saídas:</strong> R$ {{ "%.2f" | format(total_saidas) }}</p> <!-- Exibe total de saídas -->
+                    <p><strong>Saldo:</strong> R$ {{ "%.2f" | format(total_entradas - total_saidas) }}</p> <!-- Exibe saldo -->
+                </div>
+            {% else %}
+                <p>Selecione um período para visualizar os dados.</p> <!-- Mensagem caso não haja dados -->
+            {% endif %}
+        </div>
+
+        <div id="chartsSection"> <!-- Seção para exibir gráficos e tabela -->
+            {% if total_entradas is not none and total_saidas is not none %} <!-- Verifica se há dados para gráficos -->
+                <div class="chart-container">
+                    <canvas id="pizzaChart"></canvas> <!-- Canvas para gráfico de pizza -->
+                </div>
+                <table class="data-table" id="pizzaTable"></table> <!-- Tabela para exibir dados do gráfico de pizza -->
+                <div class="chart-container">
+                    <canvas id="lineChart"></canvas> <!-- Canvas para gráfico de linha -->
+                </div>
+            {% else %}
+                <p class="debug-message">Nenhum dado disponível para exibir os gráficos. Selecione um período.</p> <!-- Mensagem de erro -->
+            {% endif %}
+        </div>
+
+        <div class="nav">
+            <a href="{{ url_for('entrada') }}">Entradas</a> | <!-- Link para Entradas -->
+            <a href="{{ url_for('saida') }}">Saídas</a> | <!-- Link para Saídas -->
+            <a href="{{ url_for('analise') }}">Análise</a> | <!-- Link para a página de Análise Financeira -->
+            <a href="{{ url_for('anotacoes') }}">Anotações</a> | <!-- Link para a página de Anotações -->
+            <a href="{{ url_for('contas_a_pagar') }}">Contas a Pagar</a> | <!-- Link para a página de Contas a Pagar -->
+            <a href="{{ url_for('logout') }}">Sair</a> <!-- Link para Logout -->
+        </div>
+    </div>
+
+    <script>
+        function initializeCharts() { // Função para inicializar os gráficos
+            // Verifica se a biblioteca Chart.js foi carregada corretamente
+            if (typeof Chart === 'undefined') {
+                console.error("Chart.js não foi carregado corretamente.");
+                document.getElementById('chartsSection').innerHTML += '<p class="debug-message">Erro: Não foi possível carregar a biblioteca de gráficos. Verifique sua conexão com a internet.</p>';
+                return;
+            }
+
+            // Dados para o gráfico de pizza
+            let dadosPizza = {{ dados_pizza | tojson | safe }} || { pix: 0, cartao: 0, cedula: 0, saida: 0 }; // Obtém os dados de pizza do backend ou usa valores padrão
+            const pizzaLabels = []; // Array para labels do gráfico de pizza
+            const pizzaData = []; // Array para dados do gráfico de pizza
+            const pizzaColors = []; // Array para cores do gráfico de pizza
+
+            // Adiciona dados ao gráfico de pizza se forem maiores que 0
+            if (dadosPizza.pix > 0) {
+                pizzaLabels.push('Pix'); // Adiciona label
+                pizzaData.push(dadosPizza.pix); // Adiciona dado
+                pizzaColors.push('#4caf50'); // Adiciona cor
+            }
+            if (dadosPizza.cartao > 0) {
+                pizzaLabels.push('Cartão');
+                pizzaData.push(dadosPizza.cartao);
+                pizzaColors.push('#ff9800');
+            }
+            if (dadosPizza.cedula > 0) {
+                pizzaLabels.push('Cédula');
+                pizzaData.push(dadosPizza.cedula);
+                pizzaColors.push('#2196f3');
+            }
+            if (dadosPizza.saida > 0) {
+                pizzaLabels.push('Saídas');
+                pizzaData.push(dadosPizza.saida);
+                pizzaColors.push('#f44336');
+            }
+
+            console.log("Dados Pizza:", { labels: pizzaLabels, data: pizzaData }); // Log para depuração
+
+            const pizzaCtx = document.getElementById('pizzaChart')?.getContext('2d'); // Obtém contexto do canvas para pizza
+            if (pizzaCtx && pizzaData.length > 0) {
+                // Cria o gráfico de pizza
+                new Chart(pizzaCtx, {
+                    type: 'pie', // Tipo de gráfico
+                    data: {
+                        labels: pizzaLabels, // Labels do gráfico
+                        datasets: [{
+                            data: pizzaData, // Dados do gráfico
+                            backgroundColor: pizzaColors, // Cores do gráfico
+                            borderColor: '#ffffff', // Cor da borda entre as fatias
+                            borderWidth: 2 // Largura da borda
+                        }]
+                    },
+                    options: {
+                        responsive: true, // Gráfico responsivo
+                        maintainAspectRatio: false, // Não mantém proporção
+                        plugins: {
+                            legend: {
+                                position: 'right', // Posiciona a legenda à direita
+                                align: 'center', // Alinha verticalmente ao centro
+                                labels: {
+                                    boxWidth: 20, // Tamanho da caixinha de cor
+                                    padding: 15, // Espaçamento entre os itens
+                                    font: {
+                                        size: 16, // Tamanho da fonte
+                                        weight: 'bold' // Negrito para maior legibilidade
+                                    },
+                                    color: '#1a237e' // Cor escura para contraste com o fundo claro
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Distribuição por Tipo de Transação',
+                                font: {
+                                    size: 18,
+                                    weight: 'bold'
+                                },
+                                color: '#1a237e' // Cor do título
+                            }
+                        }
+                    }
+                });
+            } else if (pizzaCtx) {
+                document.getElementById('chartsSection').innerHTML += '<p class="debug-message">Nenhum dado disponível para o gráfico de pizza.</p>'; // Mensagem de erro
+            }
+
+            // Cria a tabela com os dados do gráfico de pizza
+            const table = document.getElementById('pizzaTable');
+            if (table && pizzaData.length > 0) {
+                table.innerHTML = `
+                    <tr>
+                        <th>Pix</th>
+                        <th>Cartão</th>
+                        <th>Cédula</th>
+                        <th>Saídas</th>
+                        <th>Saldo</th>
+                    </tr>
+                    <tr>
+                        <td>R$ ${dadosPizza.pix.toFixed(2)}</td>
+                        <td>R$ ${dadosPizza.cartao.toFixed(2)}</td>
+                        <td>R$ ${dadosPizza.cedula.toFixed(2)}</td>
+                        <td>R$ ${dadosPizza.saida.toFixed(2)}</td>
+                        <td>R$ ${(dadosPizza.pix + dadosPizza.cartao + dadosPizza.cedula - dadosPizza.saida).toFixed(2)}</td>
+                    </tr>
+                `;
+            } else if (table) {
+                table.innerHTML = '<tr><td colspan="5">Nenhum dado disponível para a tabela.</td></tr>';
+            }
+
+            // Dados para o gráfico de linha (evolução do saldo)
+            let dadosLinha = {{ dados_vela | tojson | safe }} || []; // Obtém os dados do backend ou usa um array vazio
+            if (!Array.isArray(dadosLinha)) {
+                console.error("dados_vela não é um array:", dadosLinha);
+                dadosLinha = [];
+            }
+
+            console.log("Dados Linha:", dadosLinha); // Log para depuração
+
+            const lineCtx = document.getElementById('lineChart')?.getContext('2d'); // Obtém contexto do canvas para linha
+            if (lineCtx && dadosLinha.length > 0) {
+                // Extrai labels (datas) e dados (saldos) do array
+                const labels = dadosLinha.map(item => item.x);
+                const data = dadosLinha.map(item => item.c);
+
+                // Cria o gráfico de linha
+                new Chart(lineCtx, {
+                    type: 'line', // Tipo de gráfico
+                    data: {
+                        labels: labels, // Labels do gráfico
+                        datasets: [{
+                            label: 'Saldo Acumulado (R$)', // Label da linha
+                            data: data, // Dados do saldo
+                            borderColor: '#d81b60', // Rosa escuro vibrante para a linha
+                            backgroundColor: 'rgba(216, 27, 96, 0.3)', // Preenchimento com transparência
+                            fill: true, // Preenche a área sob a linha
+                            tension: 0.1, // Suaviza a linha
+                            pointBackgroundColor: '#d81b60', // Cor dos pontos
+                            pointBorderColor: '#ffffff', // Borda branca nos pontos
+                            pointBorderWidth: 2, // Largura da borda dos pontos
+                            pointRadius: 4, // Tamanho dos pontos
+                            pointHoverRadius: 6 // Tamanho dos pontos ao passar o mouse
+                        }]
+                    },
+                    options: {
+                        responsive: true, // Gráfico responsivo
+                        maintainAspectRatio: false, // Não mantém proporção
+                        plugins: {
+                            legend: {
+                                position: 'right', // Posiciona a legenda à direita
+                                align: 'center', // Alinha verticalmente ao centro
+                                labels: {
+                                    boxWidth: 20, // Tamanho da caixinha de cor
+                                    padding: 15, // Espaçamento entre os itens
+                                    font: {
+                                        size: 16, // Tamanho da fonte
+                                        weight: 'bold' // Negrito para maior legibilidade
+                                    },
+                                    color: '#1a237e' // Cor escura para contraste
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Evolução do Saldo no Período',
+                                font: {
+                                    size: 18,
+                                    weight: 'bold'
+                                },
+                                color: '#1a237e' // Cor do título
+                            },
+                            tooltip: {
+                                enabled: true, // Ativa o tooltip
+                                mode: 'nearest', // Mostra tooltip no ponto mais próximo
+                                intersect: false, // Permite tooltip fora do ponto
+                                backgroundColor: 'rgba(40, 53, 147, 0.9)', // Fundo azul escuro
+                                titleFont: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                bodyFont: {
+                                    size: 14
+                                },
+                                titleColor: '#ffffff', // Cor do título do tooltip
+                                bodyColor: '#ffffff', // Cor do texto do tooltip
+                                borderColor: '#d81b60', // Borda rosa para combinar com a linha
+                                borderWidth: 1, // Largura da borda
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += 'R$ ' + context.parsed.y.toFixed(2);
+                                        } else {
+                                            label += 'R$ 0.00'; // Valor padrão se inválido
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Data',
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    },
+                                    color: '#1a237e'
+                                },
+                                ticks: {
+                                    color: '#1a237e'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Saldo (R$)',
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    },
+                                    color: '#1a237e'
+                                },
+                                ticks: {
+                                    color: '#1a237e'
+                                }
+                            }
+                        }
+                    }
+                });
+            } else if (lineCtx) {
+                document.getElementById('chartsSection').innerHTML += '<p class="debug-message">Nenhum dado disponível para o gráfico de linha.</p>'; // Mensagem de erro
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() { // Evento disparado quando o DOM está carregado
+            console.log("DOM carregado, inicializando..."); // Log para depuração
+            try {
+                initializeCharts(); // Inicializa os gráficos
+            } catch (e) {
+                console.error("Erro ao inicializar os gráficos:", e); // Log de erro
+                document.getElementById('chartsSection').innerHTML += '<p class="debug-message">Erro ao carregar os gráficos: ' + e.message + '</p>'; // Mensagem de erro
+            }
+        }); // Fecha o evento DOMContentLoaded
+    </script>
+</body>
+</html>

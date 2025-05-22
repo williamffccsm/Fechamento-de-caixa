@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8"> <!-- Define a codificação de caracteres como UTF-8 para suportar acentos -->
+    <title>Análise - Caixa FFCC</title> <!-- Título da página exibido na aba do navegador -->
+    <style>
+        body { 
+            background-color: #f3e5f5; /* Define a cor de fundo do corpo da página */
+            font-family: Arial, sans-serif; /* Define a fonte padrão */
+            margin: 0; /* Remove margens padrão */
+            padding-top: 60px; /* Espaço para o menu fixo no topo */
+        }
+        /* Estilo do menu de navegação */
+        .navbar {
+            position: fixed; /* Fixa o menu no topo da página */
+            top: 0; /* Posiciona no topo */
+            left: 0; /* Alinha à esquerda */
+            width: 100%; /* Ocupa toda a largura */
+            background: linear-gradient(45deg, #ab47bc, #c690d8); /* Gradiente de fundo */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra para efeito 3D */
+            display: flex; /* Usa flexbox para alinhamento */
+            justify-content: center; /* Centraliza os itens horizontalmente */
+            align-items: center; /* Centraliza os itens verticalmente */
+            height: 60px; /* Altura do menu */
+            z-index: 1000; /* Garante que o menu fique acima de outros elementos */
+        }
+        .navbar a {
+            color: #fff; /* Cor do texto dos links */
+            font-weight: bold; /* Texto em negrito */
+            text-decoration: none; /* Remove sublinhado padrão */
+            padding: 15px 25px; /* Espaçamento interno */
+            transition: background 0.3s, transform 0.1s; /* Animação de transição */
+            border-radius: 5px; /* Bordas arredondadas */
+            margin: 0 10px; /* Margem entre os links */
+        }
+        /* Cores específicas para cada página */
+        .navbar a[href*="entrada"] {
+            background: #4caf50; /* Verde para a página de Entradas */
+        }
+        .navbar a[href*="saida"] {
+            background: #ff6b00; /* Vermelho para a página de Saídas */
+        }
+        .navbar a[href*="analise"] {
+            background: #ff9800; /* Laranja para a página de Análise Financeira */
+        }
+        .navbar a[href*="dashboard"] {
+            background: #2196f3; /* Azul para a página de Dashboard */
+        }
+        .navbar a[href*="logout"] {
+            background: #ff1134; /* Cinza escuro para o botão de Sair */
+        }
+        .navbar a:hover {
+            transform: scale(1.05); /* Aumenta o tamanho ao passar o mouse */
+            background: #dfbdf4; /* Cor de fundo ao passar o mouse */
+        }
+        .container { 
+            max-width: 800px; /* Largura máxima do container */
+            margin: 50px auto; /* Centraliza o container com margens */
+            padding: 20px; /* Espaçamento interno */
+            background: #f9f1fb; /* Cor de fundo do container */
+            border-radius: 10px; /* Bordas arredondadas */
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Sombra leve */
+            text-align: center; /* Alinha o texto ao centro */
+            position: relative; /* Posicionamento relativo para o datetime */
+        }
+        h2 { color: #ab47bc; } /* Cor do título principal */
+        .input-row { 
+            display: flex; /* Usa flexbox para alinhamento */
+            align-items: center; /* Alinha itens verticalmente */
+            gap: 10px; /* Espaçamento entre elementos */
+            margin: 10px 0; /* Margem externa */
+        }
+        input, select { 
+            padding: 10px; /* Espaçamento interno */
+            border: 2px solid #dfbdf4; /* Borda */
+            border-radius: 5px; /* Bordas arredondadas */
+        }
+        button { 
+            background: linear-gradient(45deg, #ab47bc, #dfbdf4); /* Gradiente de fundo */
+            color: #000000; /* Cor do texto */
+            padding: 10px 20px; /* Espaçamento interno */
+            border: none; /* Remove borda */
+            border-radius: 5px; /* Bordas arredondadas */
+            cursor: pointer; /* Cursor de mão */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Sombra */
+            transition: transform 0.1s; /* Animação de transição */
+            font-weight: bold; /* Adiciona negrito */
+        }
+        button:hover { 
+            transform: scale(1.05); /* Aumenta ao passar o mouse */
+            background: linear-gradient(45deg, #c690d8, #dfbdf4); /* Novo gradiente */
+        }
+        .result { 
+            margin: 20px 0; /* Margem externa */
+            padding: 10px; /* Espaçamento interno */
+            background: #fff; /* Cor de fundo */
+            border-radius: 5px; /* Bordas arredondadas */
+        }
+        .result p { margin: 5px 0; } /* Margem para parágrafos dentro do resultado */
+        .nav { 
+            margin-top: 20px; /* Margem superior */
+        }
+        .nav a { 
+            color: #ab47bc; /* Cor dos links */
+            margin: 0 10px; /* Margem entre links */
+            text-decoration: none; /* Remove sublinhado */
+        }
+        .nav a:hover { 
+            text-decoration: underline; /* Sublinha ao passar o mouse */
+        }
+        table { 
+            width: 100%; /* Largura total */
+            border-collapse: collapse; /* Remove espaçamento entre bordas */
+            margin-top: 20px; /* Margem superior */
+        }
+        th, td { 
+            padding: 10px; /* Espaçamento interno */
+            border: 1px solid #dfbdf4; /* Borda */
+            text-align: center; /* Alinha texto ao centro */
+        }
+        th { 
+            background-color: #c690d8; /* Cor de fundo do cabeçalho */
+            color: #fff; /* Cor do texto */
+        }
+        .summary-table { margin: 20px 0; } /* Margem para a tabela de resumo */
+        .summary-table th { background-color: #ab47bc; } /* Cor de fundo do cabeçalho da tabela de resumo */
+        .filter-buttons { margin: 10px 0; } /* Margem para os botões de filtro */
+        .datetime { 
+            position: absolute; /* Posicionamento absoluto */
+            top: 20px; /* Distância do topo */
+            right: 20px; /* Distância da direita */
+            color: #ab47bc; /* Cor do texto */
+            font-weight: bold; /* Texto em negrito */
+        }
+        .navbar a[href*="anotacoes"] {
+            background: #9c27b0; /* Roxo para a página de Anotações */
+        }
+        .navbar a[href*="contas_a_pagar"] {
+            background: #ffeb3b; /* Amarelo para a página de Contas a Pagar */
+            color: #000; /* Texto preto para melhor contraste */
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu de Navegação fixo no topo -->
+    <div class="navbar">
+        <a href="{{ url_for('entrada') }}">Entradas</a> <!-- Link para a página de Entradas -->
+        <a href="{{ url_for('saida') }}">Saídas</a> <!-- Link para a página de Saídas -->
+        <a href="{{ url_for('analise') }}">Análise Financeira</a> <!-- Link para a página de Análise Financeira -->
+        <a href="{{ url_for('dashboard') }}">Dashboard</a> <!-- Link para a página de Dashboard -->
+        <a href="{{ url_for('anotacoes') }}">Anotações</a>
+        <a href="{{ url_for('contas_a_pagar') }}">Contas a Pagar</a> |
+        <a href="{{ url_for('logout') }}">Sair</a> <!-- Link para a página de Logout -->
+    </div>
+
+    <div class="container">
+        <div class="datetime">{{ current_datetime }}</div> <!-- Exibe a data e hora atual -->
+        <h2>Análise Financeira 🌈</h2> <!-- Título principal da página -->
+
+        <!-- Formulário para exportar CSV -->
+        <form method="POST" action="{{ url_for('exportar_csv') }}"> <!-- Formulário para exportar dados em CSV -->
+            <input type="hidden" name="filtro" value="{{ request.form['filtro'] }}"> <!-- Armazena o filtro selecionado, se houver -->
+            <input type="hidden" name="data" value="{{ request.form['data'] }}"> <!-- Armazena a data selecionada, se houver -->
+            <div class="input-row">
+                <button type="submit">Exportar CSV</button> <!-- Botão para iniciar a exportação -->
+            </div>
+        </form>
+
+        <!-- Novo formulário para filtrar por período -->
+        <form method="POST" action="{{ url_for('analise') }}"> <!-- Formulário para submeter o filtro por período -->
+            <div class="input-row">
+                <label>Data Início:</label> <!-- Rótulo para o campo de data de início -->
+                <input type="date" name="data_inicio" value="{{ data_inicio.strftime('%Y-%m-%d') if data_inicio else '' }}" required> <!-- Campo para selecionar a data de início -->
+                <label>Data Fim:</label> <!-- Rótulo para o campo de data de fim -->
+                <input type="date" name="data_fim" value="{{ data_fim.strftime('%Y-%m-%d') if data_fim else '' }}" required> <!-- Campo para selecionar a data de fim -->
+                <button type="submit" name="analisar">Analisar</button> <!-- Botão para submeter o filtro -->
+            </div>
+        </form>
+
+        <!-- Exibe os resultados da análise mensal, se existirem -->
+        {% if total_entrada_mes or total_saida_mes %}
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Total Entrada Mês</th> <!-- Cabeçalho para o total de entradas do mês -->
+                        <th>Total Saída Mês</th> <!-- Cabeçalho para o total de saídas do mês -->
+                        <th>Resultado do Mês ({{ mes_relatorio }})</th> <!-- Cabeçalho para o resultado do mês -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>R$ {{ "%.2f" % total_entrada_mes }}</td> <!-- Exibe o total de entradas -->
+                        <td>R$ {{ "%.2f" % total_saida_mes }}</td> <!-- Exibe o total de saídas -->
+                        <td>R$ {{ "%.2f" % (total_entrada_mes - total_saida_mes) }}</td> <!-- Exibe o resultado (entrada - saída) -->
+                    </tr>
+                </tbody>
+            </table>
+        {% endif %}
+
+        <!-- Exibe os totais gerais, se existirem -->
+        {% if entradas or saidas or saldo %}
+            <div class="result">
+                <p><strong>Entradas:</strong> R$ {{ "%.2f" % entradas }}</p> <!-- Exibe o total de entradas -->
+                <p><strong>Saídas:</strong> R$ {{ "%.2f" % saidas }}</p> <!-- Exibe o total de saídas -->
+                <p><strong>Saldo:</strong> R$ {{ "%.2f" % saldo }}</p> <!-- Exibe o saldo -->
+            </div>
+        {% endif %}
+
+        <!-- Exibe a tabela de transações detalhadas, se existirem -->
+        {% if transacoes_detalhadas %}
+            <div class="filter-buttons">
+                <button onclick="filterTable('all')">Todas</button> <!-- Botão para mostrar todas as transações -->
+                <button onclick="filterTable('pix-jaci')">Entrada Pix Jaci</button> <!-- Filtro para Pix de Jacira -->
+                <button onclick="filterTable('pix-will')">Entrada Pix Will</button> <!-- Filtro para Pix de William -->
+                <button onclick="filterTable('cartao-jaci')">Entrada Cartão Jaci</button> <!-- Filtro para Cartão de Jacira -->
+                <button onclick="filterTable('cartao-will')">Entrada Cartão Will</button> <!-- Filtro para Cartão de William -->
+                <button onclick="filterTable('dinheiro')">Entrada Dinheiro</button> <!-- Filtro para transações em dinheiro -->
+            </div>
+            <table id="transacoesTable">
+                <thead>
+                    <tr>
+                        <th>Data</th> <!-- Cabeçalho da coluna de data -->
+                        <th>Dia da Semana</th> <!-- Cabeçalho da coluna de dia da semana -->
+                        <th>Pix</th> <!-- Cabeçalho da coluna de Pix -->
+                        <th>Dinheiro</th> <!-- Cabeçalho da coluna de Dinheiro -->
+                        <th>Cartão</th> <!-- Cabeçalho da coluna de Cartão -->
+                        <th>Saídas</th> <!-- Cabeçalho da coluna de Saídas -->
+                        <th>Total Entrada</th> <!-- Cabeçalho da coluna de total de entrada -->
+                        <th>Total Saída</th> <!-- Cabeçalho da coluna de total de saída -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in transacoes_detalhadas %} <!-- Loop pelas transações detalhadas -->
+                        <tr data-dono="{{ t.dono_transacao if t.pix or t.cartao else '' }}" data-tipo="{{ 'dinheiro' if t.dinheiro else 'pix' if t.pix else 'cartao' if t.cartao else 'saida' }}">
+                            <td>{{ t.data }}</td> <!-- Exibe a data da transação -->
+                            <td>{{ t.dia_semana }}</td> <!-- Exibe o dia da semana -->
+                            <td>R$ {{ "%.2f" % t.pix }}</td> <!-- Exibe o valor de Pix -->
+                            <td>R$ {{ "%.2f" % t.dinheiro }}</td> <!-- Exibe o valor de Dinheiro -->
+                            <td>R$ {{ "%.2f" % t.cartao }}</td> <!-- Exibe o valor de Cartão -->
+                            <td>R$ {{ "%.2f" % t.saidas }}</td> <!-- Exibe o valor de Saídas -->
+                            <td>R$ {{ "%.2f" % t.total_entrada }}</td> <!-- Exibe o total de entradas -->
+                            <td>R$ {{ "%.2f" % t.total_saida }}</td> <!-- Exibe o total de saídas -->
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+        <div class="nav">
+            <a href="{{ url_for('entrada') }}">Entradas</a> | <!-- Link para a página de Entradas -->
+            <a href="{{ url_for('saida') }}">Saídas</a> | <!-- Link para a página de Saídas -->
+            <a href="{{ url_for('dashboard') }}">Dashboard</a> <!-- Link para a página de Dashboard -->
+            <a href="{{ url_for('anotacoes') }}">Anotações</a> |
+            <a href="{{ url_for('contas_a_pagar') }}">Contas a Pagar</a> |
+            <a href="{{ url_for('logout') }}">Sair</a> <!-- Link para a página de Logout -->
+        </div>
+    </div>
+
+    <script>
+        function filterTable(filter) {
+            const rows = document.querySelectorAll('#transacoesTable tbody tr'); // Seleciona todas as linhas da tabela
+            rows.forEach(row => {
+                const tipo = row.getAttribute('data-tipo'); // Obtém o tipo da transação
+                const dono = row.getAttribute('data-dono'); // Obtém o dono da transação
+                row.style.display = 'none'; // Oculta todas as linhas por padrão
+                if (filter === 'all') {
+                    row.style.display = ''; // Mostra todas as linhas
+                } else if (filter === 'pix-jaci' && tipo === 'pix' && dono === 'Jacira') {
+                    row.style.display = ''; // Mostra Pix de Jacira
+                } else if (filter === 'pix-will' && tipo === 'pix' && dono === 'William') {
+                    row.style.display = ''; // Mostra Pix de William
+                } else if (filter === 'cartao-jaci' && tipo === 'cartao' && dono === 'Jacira') {
+                    row.style.display = ''; // Mostra Cartão de Jacira
+                } else if (filter === 'cartao-will' && tipo === 'cartao' && dono === 'William') {
+                    row.style.display = ''; // Mostra Cartão de William
+                } else if (filter === 'dinheiro' && tipo === 'dinheiro') {
+                    row.style.display = ''; // Mostra transações em Dinheiro
+                }
+            });
+        }
+
+        // Estiliza o link como botão
+        const dashboardButton = document.querySelector('.button'); // Seleciona o link do Dashboard
+        if (dashboardButton) {
+            dashboardButton.style.background = 'linear-gradient(45deg, #ab47bc, #dfbdf4)'; // Define o gradiente de fundo
+            dashboardButton.style.color = '#fff'; // Define a cor do texto
+            dashboardButton.style.padding = '10px 20px'; // Define o espaçamento interno
+            dashboardButton.style.borderRadius = '5px'; // Define bordas arredondadas
+            dashboardButton.style.textDecoration = 'none'; // Remove sublinhado
+            dashboardButton.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)'; // Adiciona sombra
+            dashboardButton.style.transition = 'transform 0.1s'; // Adiciona transição
+            dashboardButton.addEventListener('mouseover', () => { // Efeito ao passar o mouse
+                dashboardButton.style.transform = 'scale(1.05)'; // Aumenta o tamanho
+                dashboardButton.style.background = 'linear-gradient(45deg, #c690d8, #dfbdf4)'; // Novo gradiente
+            });
+            dashboardButton.addEventListener('mouseout', () => { // Efeito ao sair do mouse
+                dashboardButton.style.transform = 'scale(1)'; // Retorna ao tamanho original
+                dashboardButton.style.background = 'linear-gradient(45deg, #ab47bc, #dfbdf4)'; // Restaura o gradiente
+            });
+        }
+    </script>
+</body>
+</html>

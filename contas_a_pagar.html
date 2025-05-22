@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Contas a Pagar - Caixa FFCC</title>
+    <style>
+        body { 
+            background-color: #e1f0fa;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-top: 60px;
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(45deg, #4a90e2, #7abff5);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 60px;
+            z-index: 1000;
+        }
+        .navbar a {
+            color: #fff;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 15px 25px;
+            transition: background 0.3s, transform 0.1s;
+            border-radius: 5px;
+            margin: 0 10px;
+        }
+        .navbar a[href*="entrada"] { background: #4caf50; }
+        .navbar a[href*="saida"] { background: #ff6b00; }
+        .navbar a[href*="analise"] { background: #ff9800; }
+        .navbar a[href*="dashboard"] { background: #2196f3; }
+        .navbar a[href*="anotacoes"] { background: #9c27b0; }
+        .navbar a[href*="contas_a_pagar"] { background: #ffeb3b; color: #000; }
+        .navbar a[href*="logout"] { background: #f44336; }
+        .navbar a:hover {
+            transform: scale(1.05);
+            background: #a3d4f7;
+        }
+        .container { 
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #e6f7fa;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+        }
+        h2 { color: #4a90e2; }
+        .input-row { 
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            justify-content: center;
+        }
+        input[type="date"], input[type="time"], input[type="text"], input[type="number"], textarea { 
+            padding: 10px;
+            border: 2px solid #a3d4f7;
+            border-radius: 5px;
+            width: 200px;
+        }
+        textarea { 
+            width: 300px;
+            height: 100px;
+            resize: none;
+        }
+        button { 
+            background: linear-gradient(45deg, #4a90e2, #a3d4f7);
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+        button:hover { 
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #7abff5, #a3d4f7);
+        }
+        .message { 
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { 
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error { 
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .nav { 
+            margin-top: 20px;
+        }
+        .nav a { 
+            color: #4a90e2;
+            margin: 0 10px;
+            text-decoration: none;
+        }
+        .nav a:hover { 
+            text-decoration: underline;
+        }
+        table { 
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td { 
+            padding: 10px;
+            border: 1px solid #a3d4f7;
+            text-align: center;
+        }
+        th { 
+            background-color: #7abff5;
+            color: #fff;
+        }
+        .datetime { 
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #4a90e2;
+            font-weight: bold;
+        }
+        .delete-btn {
+            background: #f44336;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .delete-btn:hover {
+            background: #d32f2f;
+        }
+        .status-select {
+            padding: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .status-a_pagar { background-color: #ffeb3b; color: #000; }
+        .status-pago { background-color: #4caf50; color: #fff; }
+        .status-vencida { background-color: #f44336; color: #fff; }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            width: 300px;
+        }
+        .modal-content p {
+            margin: 0 0 20px;
+            color: #4a90e2;
+            font-weight: bold;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .modal-buttons button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            color: #fff;
+        }
+        .modal-buttons .confirm-btn {
+            background: #f44336;
+        }
+        .modal-buttons .confirm-btn:hover {
+            background: #d32f2f;
+        }
+        .modal-buttons .cancel-btn {
+            background: #4a90e2;
+        }
+        .modal-buttons .cancel-btn:hover {
+            background: #7abff5;
+        }
+        .modal-buttons .ok-btn {
+            background: #4caf50;
+        }
+        .modal-buttons .ok-btn:hover {
+            background: #388e3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('entrada') }}">Entradas</a>
+        <a href="{{ url_for('saida') }}">Saídas</a>
+        <a href="{{ url_for('analise') }}">Análise Financeira</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('anotacoes') }}">Anotações</a>
+        <a href="{{ url_for('contas_a_pagar') }}">Contas a Pagar</a>
+        <a href="{{ url_for('logout') }}">Sair</a>
+    </div>
+
+    <div class="container">
+        <div class="datetime">{{ current_datetime }}</div>
+        <h2>Contas a Pagar 💸</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Formulário para criar uma nova conta -->
+        <form method="POST">
+            <div class="input-row">
+                <input type="text" name="nome_conta" placeholder="Nome da Conta" required>
+            </div>
+            <div class="input-row">
+                <textarea name="descricao" placeholder="Descrição da Conta" required></textarea>
+            </div>
+            <div class="input-row">
+                <input type="time" name="hora_alarme" required>
+            </div>
+            <div class="input-row">
+                <input type="date" name="data_vencimento" required>
+            </div>
+            <div class="input-row">
+                <input type="number" name="valor" step="0.01" placeholder="Valor (ex.: 50.00)" required>
+            </div>
+            <div class="input-row">
+                <button type="submit">Criar Conta</button>
+                <button type="button" onclick="window.location.href='{{ url_for('fechar_caixa') }}'">Fechar Caixa</button>
+            </div>
+        </form>
+
+        <!-- Tabela de contas a pagar -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Ordem</th>
+                    <th>Nome da Conta</th>
+                    <th>Descrição</th>
+                    <th>Hora do Alarme</th>
+                    <th>Data de Vencimento</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for conta in contas %}
+                    <tr data-conta-id="{{ conta[0] }}" data-data-vencimento="{{ conta[4] }}" data-hora-alarme="{{ conta[3] }}" data-nome="{{ conta[1] }}" data-valor="{{ conta[5] }}">
+                        <td>{{ loop.index }}</td>
+                        <td>{{ conta[1] }}</td>
+                        <td>{{ conta[2] }}</td>
+                        <td>{{ conta[3] }}</td>
+                        <td>{{ conta[4] }}</td>
+                        <td>R$ {{ "%.2f" % conta[5] }}</td>
+                        <td>
+                            <form method="POST">
+                                <input type="hidden" name="conta_id" value="{{ conta[0] }}">
+                                <select name="status" class="status-select status-{{ conta[6] }}" onchange="this.form.submit()">
+                                    <option value="a_pagar" {% if conta[6] == 'a_pagar' %}selected{% endif %}>A Pagar</option>
+                                    <option value="pago" {% if conta[6] == 'pago' %}selected{% endif %}>Pago</option>
+                                    <option value="vencida" {% if conta[6] == 'vencida' %}selected{% endif %}>Vencida</option>
+                                </select>
+                                <input type="hidden" name="update_status" value="1">
+                            </form>
+                        </td>
+                        <td>
+                            <button class="delete-btn" onclick="showDeleteModal({{ conta[0] }}, '{{ conta[1] }}')">X</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pop-up de confirmação para exclusão -->
+        <div id="deleteModal" class="modal">
+            <div class="modal-content">
+                <p id="deleteMessage"></p>
+                <div class="modal-buttons">
+                    <button class="confirm-btn" id="confirmDelete">Apagar</button>
+                    <button class="cancel-btn" onclick="closeDeleteModal()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pop-up de alarme -->
+        <div id="alarmeModal" class="modal">
+            <div class="modal-content">
+                <p id="alarmeMessage"></p>
+                <div class="modal-buttons">
+                    <button class="ok-btn" onclick="closeAlarmeModal()">Ok</button>
+                    <button class="cancel-btn" onclick="closeAlarmeModal()">Fechar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav">
+            <a href="{{ url_for('entrada') }}">Entradas</a> |
+            <a href="{{ url_for('saida') }}">Saídas</a> |
+            <a href="{{ url_for('analise') }}">Análise</a> |
+            <a href="{{ url_for('dashboard') }}">Painel</a> |
+            <a href="{{ url_for('anotacoes') }}">Anotações</a> |
+            <a href="{{ url_for('logout') }}">Sair</a>
+        </div>
+    </div>
+
+    <script>
+        function showDeleteModal(contaId, nome) {
+            const modal = document.getElementById('deleteModal');
+            const message = document.getElementById('deleteMessage');
+            const confirmBtn = document.getElementById('confirmDelete');
+
+            message.textContent = `Tem certeza que deseja apagar a conta "${nome}"?`;
+            modal.style.display = 'flex';
+
+            confirmBtn.onclick = function() {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/contas_a_pagar';
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'delete_id';
+                input.value = contaId;
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            };
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        function showAlarmeModal(nome, data, hora, valor) {
+            const modal = document.getElementById('alarmeModal');
+            const message = document.getElementById('alarmeMessage');
+            message.textContent = `Conta a Pagar: ${nome}\nData de Vencimento: ${data}\nHora: ${hora}\nValor: R$ ${parseFloat(valor).toFixed(2)}`;
+            
+            // Tocar som de telefone
+            const audio = new Audio('https://www.soundjay.com/phone/phone-ring-01a.mp3');
+            audio.play().catch(error => console.log('Erro ao tocar som:', error));
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeAlarmeModal() {
+            document.getElementById('alarmeModal').style.display = 'none';
+        }
+
+        // Verificar contas para alarmes
+        function checkAlarmes() {
+            const now = new Date();
+            const currentDate = now.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+            const currentTime = now.toTimeString().split(' ')[0].substring(0, 5); // Formato HH:MM
+
+            document.querySelectorAll('tr[data-conta-id]').forEach(row => {
+                const dataVencimento = row.getAttribute('data-data-vencimento');
+                const horaAlarme = row.getAttribute('data-hora-alarme').substring(0, 5);
+                const nome = row.getAttribute('data-nome');
+                const valor = row.getAttribute('data-valor');
+
+                if (dataVencimento === currentDate && horaAlarme === currentTime) {
+                    showAlarmeModal(nome, dataVencimento, horaAlarme, valor);
+                }
+            });
+        }
+
+        // Executar verificação de alarmes a cada minuto
+        setInterval(checkAlarmes, 60000);
+        checkAlarmes(); // Verificar imediatamente ao carregar a página
+    </script>
+</body>
+</html>
